@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import { FiShoppingBag } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import OwnerOrderCard from "../components/OwnerOrderCard";
@@ -18,11 +19,9 @@ function MyOrders() {
       dispatch(
         setMyOrders((prev) => {
           const exists = prev.find((o) => o._id === order._id);
-
           if (exists) {
             return prev.map((o) => (o._id === order._id ? order : o));
           }
-
           return [order, ...prev];
         }),
       );
@@ -38,25 +37,32 @@ function MyOrders() {
   }, [socket]);
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-orange-50 to-orange-100 flex justify-center px-4 py-8">
-      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-lg p-6 md:p-8">
+    <div className="w-full min-h-screen bg-[#fafafa] flex justify-center px-4 py-8">
+      <div className="w-full max-w-4xl space-y-6">
+        
         {/* ================= HEADER ================= */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/")}
-            className="p-3 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 transition shadow-sm"
+            aria-label="Back to home"
+            className="p-2.5 rounded-2xl bg-white border border-gray-200/80 shadow-xs hover:border-orange-500 hover:text-orange-600 transition"
           >
-            <IoIosArrowRoundBack size={28} />
+            <IoIosArrowRoundBack size={26} />
           </button>
 
-          <h1 className="text-3xl font-bold text-gray-800 tracking-tight">
-            My Orders
-          </h1>
+          <div>
+            <h1 className="text-2xl font-black text-gray-900 tracking-tight">
+              {userData?.role === "owner" ? "Restaurant Order Queue" : "Order History"}
+            </h1>
+            <p className="text-xs text-gray-500">
+              {myOrders?.length || 0} order{myOrders?.length === 1 ? "" : "s"} placed on FeastFlow
+            </p>
+          </div>
         </div>
 
         {/* ================= ORDERS LIST ================= */}
-        <div className="space-y-6">
-          {myOrders.length > 0 ? (
+        <div className="space-y-5">
+          {myOrders && myOrders.length > 0 ? (
             myOrders.map((order, index) =>
               userData?.role === "user" ? (
                 <UserOrderCard key={order._id || index} data={order} />
@@ -65,16 +71,28 @@ function MyOrders() {
               ) : null,
             )
           ) : (
-            <div className="text-center py-16 border border-dashed rounded-2xl bg-orange-50">
-              <p className="text-gray-500 text-lg font-medium">
-                No orders found
+            <div className="bg-white rounded-3xl border border-gray-200/80 p-12 text-center shadow-xs space-y-4">
+              <div className="w-16 h-16 rounded-3xl bg-orange-50 text-orange-500 mx-auto flex items-center justify-center">
+                <FiShoppingBag size={28} />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900">No orders found</h3>
+              <p className="text-xs text-gray-500 max-w-sm mx-auto">
+                {userData?.role === "owner"
+                  ? "Incoming customer orders for your restaurant will appear here in real-time."
+                  : "You haven't placed any orders yet. Discover delicious foods and order your first meal!"}
               </p>
-              <p className="text-sm text-gray-400 mt-2">
-                Your orders will appear here once placed.
-              </p>
+              {userData?.role === "user" && (
+                <button
+                  onClick={() => navigate("/")}
+                  className="px-5 py-2.5 bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-xl text-xs font-bold shadow-sm hover:from-orange-700 hover:to-orange-600 transition"
+                >
+                  Explore Dishes
+                </button>
+              )}
             </div>
           )}
         </div>
+
       </div>
     </div>
   );

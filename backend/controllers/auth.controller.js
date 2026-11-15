@@ -19,30 +19,36 @@ export const signUp = async (req, res) => {
   try {
     const { fullName, email, password, mobile, role } = req.body;
 
-    let user = await User.findOne({ email });
-
-    if (user) {
-      return res.status(400).json({ message: "USER ALREDAY EXIST" });
+    const cleanEmail = email?.trim()?.toLowerCase();
+    if (!cleanEmail) {
+      return res.status(400).json({ success: false, message: "Email is required" });
     }
 
-    if (password.length < 6) {
+    let user = await User.findOne({ email: cleanEmail });
+    if (user) {
+      return res.status(400).json({ success: false, message: "An account with this email already exists" });
+    }
+
+    if (!password || password.length < 6) {
       return res
         .status(400)
-        .json({ message: "PASSWORD MUST BE AT LEAST 6 DIGIT" });
+        .json({ success: false, message: "Password must be at least 6 characters" });
     }
 
-    if (mobile.length < 10) {
-      return res.status(400).json({ message: "NUMBER MUST BE 6 DIGIT" });
+    const cleanMobile = String(mobile || "").replace(/\s+/g, "");
+    if (cleanMobile.length < 10) {
+      return res.status(400).json({ success: false, message: "Mobile number must be at least 10 digits" });
     }
 
+    const validRole = ["user", "owner", "deliveryBoy"].includes(role) ? role : "user";
     const hashedPassword = await bcrypt.hash(password, 10);
 
     user = await User.create({
-      fullName,
-      email,
+      fullName: fullName?.trim() || "User",
+      email: cleanEmail,
       password: hashedPassword,
-      role,
-      mobile,
+      role: validRole,
+      mobile: cleanMobile,
     });
 
     const token = await genToken(user._id);
@@ -54,10 +60,13 @@ export const signUp = async (req, res) => {
       user,
     });
   } catch (error) {
-    console.log(error);
+    console.log("SIGN UP ERROR:", error);
+    if (error.code === 11000) {
+      return res.status(400).json({ success: false, message: "An account with this email already exists" });
+    }
     return res.status(500).json({
       success: false,
-      message: "Registration failed",
+      message: error.message || "Registration failed",
     });
   }
 };
@@ -67,31 +76,34 @@ export const signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const cleanEmail = email?.trim()?.toLowerCase();
+    if (!cleanEmail || !password) {
+      return res.status(400).json({ success: false, message: "Email and password are required" });
+    }
 
+    const user = await User.findOne({ email: cleanEmail });
     if (!user) {
-      return res.status(400).json({ message: "NO USER FOUND" });
+      return res.status(400).json({ success: false, message: "No account found with this email" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
-      return res.status(400).json({ message: "INCORRECT PASSWORD" });
+      return res.status(400).json({ success: false, message: "Incorrect password. Please try again." });
     }
 
     const token = await genToken(user._id);
 
     res.cookie("token", token, authCookieOptions);
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       user,
     });
   } catch (error) {
-    console.log(error);
+    console.log("SIGN IN ERROR:", error);
     return res.status(500).json({
       success: false,
-      message: "Login failed",
+      message: error.message || "Login failed",
     });
   }
 };

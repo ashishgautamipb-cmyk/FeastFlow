@@ -7,7 +7,7 @@ import { serverurl } from "../App";
 
 const starterMessage = {
   role: "assistant",
-  answer: "Hi! I’m your Vingo food assistant. Tell me what you’re craving and I’ll find the best matches from the available restaurants.",
+  answer: "Hi! I’m your FeastFlow food assistant. Tell me what you’re craving and I’ll find the best matches from available restaurants.",
 };
 
 const AiFoodAssistant = () => {
@@ -95,8 +95,8 @@ const AiFoodAssistant = () => {
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/15 shadow-inner backdrop-blur-md"><Sparkles size={20} /></div>
                 <div>
-                  <div className="flex items-center gap-2"><p className="font-semibold tracking-tight">Vingo AI</p><span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider">AI</span></div>
-                  <p className="mt-0.5 text-xs text-white/75">Your personal food finder</p>
+                  <div className="flex items-center gap-2"><p className="font-semibold tracking-tight">FeastFlow AI</p><span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider">Smart Assistant</span></div>
+                  <p className="mt-0.5 text-xs text-white/75">Your personal culinary finder</p>
                 </div>
               </div>
               <button type="button" onClick={() => setOpen(false)} aria-label="Close AI assistant" className="rounded-full p-2 transition hover:bg-white/15"><X size={19} /></button>
@@ -139,15 +139,15 @@ const AiFoodAssistant = () => {
 
           <div className="border-t border-slate-100 bg-white p-3">
             <form onSubmit={search} className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-1.5 shadow-inner focus-within:border-orange-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-orange-50">
-              <input ref={inputRef} value={query} onChange={(event) => setQuery(event.target.value)} maxLength={300} className="min-w-0 flex-1 bg-transparent px-2.5 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400" placeholder="Ask for food…" aria-label="Ask Vingo AI" />
+              <input ref={inputRef} value={query} onChange={(event) => setQuery(event.target.value)} maxLength={300} className="min-w-0 flex-1 bg-transparent px-2.5 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400" placeholder="Ask for dishes, cravings or cuisines…" aria-label="Ask FeastFlow AI" />
               <button type="submit" disabled={loading || query.trim().length < 2} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-md transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Send search">{loading ? <LoaderCircle className="animate-spin" size={18} /> : <Send size={18} />}</button>
             </form>
-            <p className="mt-2 text-center text-[10px] text-slate-400">Try “veg pizza”, “spicy chicken”, or “something sweet”</p>
+            <p className="mt-2 text-center text-[10px] text-slate-400">Try “crispy thin pizza”, “spicy butter chicken”, or “healthy salad”</p>
           </div>
         </section>
       )}
 
-      <button type="button" onClick={() => setOpen((current) => !current)} aria-label={open ? "Close Vingo AI" : "Open Vingo AI"} className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 via-red-500 to-rose-600 text-white shadow-[0_12px_30px_-8px_rgba(239,68,68,0.65)] transition duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-orange-200">
+      <button type="button" onClick={() => setOpen((current) => !current)} aria-label={open ? "Close FeastFlow AI" : "Open FeastFlow AI"} className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 via-red-500 to-rose-600 text-white shadow-[0_12px_30px_-8px_rgba(239,68,68,0.65)] transition duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-orange-200">
         <span className="absolute inset-0 rounded-full bg-white/10 opacity-0 transition group-hover:opacity-100" />
         {open ? <X size={24} /> : <MessageCircle size={25} />}
       </button>

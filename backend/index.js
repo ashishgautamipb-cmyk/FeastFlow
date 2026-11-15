@@ -34,7 +34,7 @@ app.set("io", io);
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Vingo backend is running 🚀",
+    message: "FeastFlow backend is running 🚀",
   });
 });
 

@@ -33,6 +33,32 @@ export const socketHandler = (io) => {
       }
     });
 
+    // Join room for real-time order tracking
+    socket.on("joinOrder", ({ orderId }) => {
+      if (orderId) {
+        socket.join(orderId.toString());
+      }
+    });
+
+    // Real-time rider location broadcast to customer
+    socket.on("riderLocationUpdate", async ({ orderId, lat, lon, riderId }) => {
+      if (orderId && lat != null && lon != null) {
+        io.to(orderId.toString()).emit("riderLocationChanged", { lat, lon });
+      }
+      if (riderId && lat != null && lon != null) {
+        try {
+          await User.findByIdAndUpdate(riderId, {
+            location: {
+              type: "Point",
+              coordinates: [lon, lat],
+            },
+          });
+        } catch (e) {
+          console.log("Rider location DB update error:", e.message);
+        }
+      }
+    });
+
     // ============================================
     // DISCONNECT HANDLER
     // ============================================

@@ -4,6 +4,7 @@ import {
   createEditShop,
   getMyShop,
   getShopByCity,
+  getNearbyShops,
 } from "../controllers/shop.controller.js";
 import { upload } from "../middlewares/multer.js";
 
@@ -11,6 +12,7 @@ const shopRouter = express.Router();
 
 shopRouter.post("/create-edit", isAuth, upload.single("image"), createEditShop);
 shopRouter.get("/get-my", isAuth, getMyShop);
+shopRouter.get("/get-nearby", getNearbyShops);
 shopRouter.get("/get-by-city/:city", isAuth, getShopByCity);
 
 export default shopRouter;

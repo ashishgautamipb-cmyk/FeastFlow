@@ -1,25 +1,27 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
+// FeastFlow Firebase Configuration
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_APIKEY,
-  authDomain: "vingo-food-delivery-4e86d.firebaseapp.com",
-  projectId: "vingo-food-delivery-4e86d",
-  storageBucket: "vingo-food-delivery-4e86d.firebasestorage.app",
-  messagingSenderId: "321148148358",
-  appId: "1:321148148358:web:f09e1e5bee8ecadeb8cf07",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "vingo-food-delivery-4e86d.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "vingo-food-delivery-4e86d",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "vingo-food-delivery-4e86d.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "321148148358",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:321148148358:web:f09e1e5bee8ecadeb8cf07",
 };
 
-// Initialize Firebase
-//That creates the Firebase app instance.
-//But it does not automatically enable authentication.
-const app = initializeApp(firebaseConfig);
+let app = null;
+let auth = null;
 
-//This line gets the Firebase Authentication service for your app.
-const auth = getAuth(app);
+try {
+  if (firebaseConfig.apiKey) {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+  }
+} catch (error) {
+  console.warn("Firebase initialization skipped or failed:", error.message);
+}
 
 export { app, auth };

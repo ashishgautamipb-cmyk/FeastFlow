@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   setCurrentAddress,
   setCurrentCity,
@@ -10,44 +10,66 @@ import { setAddress, setLocation } from "../redux/mapSlice.js";
 
 function useGetCity() {
   const apiKey = import.meta.env.VITE_GEOAPIKEY;
-  // Creates a reference to Redux’s dispatch function, which lets your component send actions to the Redux store to update global stat
   const dispatch = useDispatch();
-  const { userData } = useSelector((state) => state.user);
 
   useEffect(() => {
-    // need to activate my pc location , getting my current location
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      console.log(position);
-      const lattitude = position.coords.latitude;
-      const longtitude = position.coords.longitude;
+    if (!navigator.geolocation) {
+      dispatch(setCurrentCity("Kolkata"));
+      dispatch(setcurrentState("West Bengal"));
+      return;
+    }
 
-      dispatch(setLocation({ lat: lattitude, lon: longtitude }));
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
 
-      // api coming from geoapify site  &&  map used reverse-geocoding-api
-      const result = await axios.get(
-        `https://api.geoapify.com/v1/geocode/reverse?lat=${lattitude}&lon=${longtitude}&format=json&apiKey=${apiKey}`,
-      );
+        dispatch(setLocation({ lat: latitude, lon: longitude }));
 
-      // dispatch(setCurrentCity(result?.data.results[0].city));
-      const resultData = result?.data?.results?.[0];
+        let city = "Kolkata";
+        let state = "West Bengal";
+        let formatted = "Kolkata, West Bengal";
+        let addressLine = "Kolkata";
 
-      const city =
-        resultData?.city ||
-        resultData?.town ||
-        resultData?.village ||
-        resultData?.municipality ||
-        resultData?.district ||
-        resultData?.county ||
-        resultData?.suburb ||
-        resultData?.state ||
-        "Unknown";
+        try {
+          if (apiKey) {
+            const result = await axios.get(
+              `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`,
+            );
+            const resultData = result?.data?.results?.[0];
+            if (resultData) {
+              city =
+                resultData.city ||
+                resultData.town ||
+                resultData.village ||
+                resultData.municipality ||
+                resultData.district ||
+                resultData.county ||
+                resultData.suburb ||
+                resultData.state ||
+                "Kolkata";
+              state = resultData.state || "West Bengal";
+              formatted = resultData.formatted || `${city}, ${state}`;
+              addressLine = resultData.address_line2 || city;
+            }
+          }
+        } catch (err) {
+          console.log("Geoapify geocode skipped or failed:", err.message);
+        }
 
-      dispatch(setCurrentCity(city));
-      dispatch(setcurrentState(result?.data.results[0].state));
-      dispatch(setCurrentAddress(result?.data.results[0].formatted));
-      dispatch(setAddress(result?.data.results[0].address_line2));
-    });
-  }, [userData]);
+        dispatch(setCurrentCity(city));
+        dispatch(setcurrentState(state));
+        dispatch(setCurrentAddress(formatted));
+        dispatch(setAddress(addressLine));
+      },
+      (geoErr) => {
+        console.log("Location access not granted:", geoErr.message);
+        dispatch(setCurrentCity("Kolkata"));
+        dispatch(setcurrentState("West Bengal"));
+      },
+      { timeout: 10000 },
+    );
+  }, [apiKey, dispatch]);
 }
 
 export default useGetCity;

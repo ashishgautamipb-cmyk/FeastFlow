@@ -7,17 +7,21 @@ import { setShopsInMyCity } from "../redux/userSlice";
 function useGetShopByCity() {
   const dispatch = useDispatch();
   const { currentCity, userData } = useSelector((state) => state.user);
+  const { location } = useSelector((state) => state.map);
 
   useEffect(() => {
-    if (!currentCity || !userData?._id) return;
+    if (!userData?._id) return;
 
     const fetchByShops = async () => {
       try {
-        const result = await axios.get(
-          `${serverurl}/api/shop/get-by-city/${encodeURIComponent(currentCity)}`,
-          { withCredentials: true },
-        );
+        let endpoint = `${serverurl}/api/shop/get-nearby?maxDistance=10000`;
+        if (location?.lat && location?.lon) {
+          endpoint = `${serverurl}/api/shop/get-nearby?lat=${location.lat}&lon=${location.lon}&maxDistance=10000`;
+        } else if (currentCity) {
+          endpoint = `${serverurl}/api/shop/get-by-city/${encodeURIComponent(currentCity)}`;
+        }
 
+        const result = await axios.get(endpoint, { withCredentials: true });
         dispatch(setShopsInMyCity(result.data.shops || []));
       } catch (error) {
         console.log("SHOP FETCH ERROR:", error.response?.data || error.message);
@@ -26,7 +30,7 @@ function useGetShopByCity() {
     };
 
     fetchByShops();
-  }, [currentCity, userData?._id, dispatch]);
+  }, [currentCity, location?.lat, location?.lon, userData?._id, dispatch]);
 }
 
 export default useGetShopByCity;

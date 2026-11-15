@@ -12,6 +12,10 @@ const shopSchema = new mongoose.Schema(
     city: { type: String, required: true },
     state: { type: String, required: true },
     address: { type: String, required: true },
+    location: {
+      type: { type: String, enum: ["Point"], default: "Point" },
+      coordinates: { type: [Number], default: [88.3639, 22.5726] }, // default [lon, lat]
+    },
     // array because we add multiple items in our cart
     items: [
       {
@@ -22,6 +26,8 @@ const shopSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+shopSchema.index({ location: "2dsphere" });
 
 const Shop = mongoose.model("Shop", shopSchema);
 

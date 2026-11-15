@@ -1,40 +1,69 @@
-# dependencies
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
 
-# env files
+# Environment variables & secrets
 .env
 .env.*
 !.env.example
+!.env.*.example
+*.env.local
 
-# logs
-logs
+# Production build outputs
+dist/
+dist-ssr/
+build/
+out/
+.next/
+
+# Vite & build caches
+.vite/
+.vite-temp/
+.cache/
+.tmp/
+.temp/
+
+# Temp uploaded files
+public/temp/
+backend/public/temp/
+uploads/
+*.tmp
+
+# Logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# OS files
-.DS_Store
-Thumbs.db
-
-# build folders
-dist/
-build/
-.vite/
-
-# cache
-.cache/
-.tmp/
-
-# editor files
+# Editor & IDE directories
 .vscode/
+!.vscode/extensions.json
 .idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# local database files
-*.db
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
 
-# coverage
+# Testing & coverage
 coverage/
+.nyc_output/
 
-# uploads (if you store images locally)
-uploads/
+# Local databases
+*.db
+*.sqlite
+*.sqlite3

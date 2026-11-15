@@ -18,12 +18,16 @@ export const addItem = async (req, res) => {
       return res.json({ success: false, message: "NO SHOP FOUND" });
     }
 
+    const itemImage =
+      image ||
+      "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800";
+
     const item = await Item.create({
       name,
       category,
       foodType,
       price,
-      image,
+      image: itemImage,
       shop: shop._id,
     });
 
@@ -64,8 +68,7 @@ export const editItem = async (req, res) => {
 
     let image;
     if (req.file) {
-      const upload = await uploadOnCloudinary(req.file.path);
-      image = upload.secure_url || upload.url;
+      image = await uploadOnCloudinary(req.file.path);
     }
 
     // find user's shop

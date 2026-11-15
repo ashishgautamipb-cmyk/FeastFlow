@@ -60,10 +60,9 @@ const App = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-orange-50">
-        <p className="text-orange-500 text-lg font-semibold animate-pulse">
-          Loading...
-        </p>
+      <div className="flex flex-col justify-center items-center min-h-screen bg-[#fafafa] gap-3">
+        <div className="w-12 h-12 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin" />
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Loading FeastFlow...</p>
       </div>
     );
   }

@@ -19,20 +19,19 @@ function useGetMyShops() {
         const result = await axios.get(`${serverurl}/api/shop/get-my`, {
           withCredentials: true,
         });
-        console.log("SHOP RESPONSE:", result.data); // 👈
         if (result.data.shop) {
           dispatch(setMyShopData(result.data.shop));
-          console.log("DISPATCHED:", result.data.shop); // 👈
         } else {
-          console.log("NO SHOP KEY — got:", result.data); // 👈
+          dispatch(setMyShopData(null));
         }
       } catch (error) {
-        console.log("HOOK ERROR:", error.response?.data || error.message); // 👈
+        console.log("HOOK ERROR:", error.response?.data || error.message);
+        dispatch(setMyShopData(null));
       }
     };
 
     fetchShop();
-  }, [location.pathname]);
+  }, [location.pathname, dispatch]);
 }
 
 export default useGetMyShops;
